@@ -1,0 +1,119 @@
+create database smi;
+use smi;
+
+create table `Administracao` (
+	ID_ADM int(5) auto_increment not null primary key, 
+	nome varchar(100) not null,
+	senha varchar(45) not null
+);
+
+create table `Usuarios` (
+	ID_USER int(5) auto_increment not null primary key , 
+	nome varchar(100) not null,
+	cargo varchar(45) not null,
+	senha varchar(45) not null,
+	setor varchar(45) not null
+);
+
+create table `Maquina` (
+	ID_MACHINE int(5) auto_increment not null, 
+	ID_USER    int(5) not null,
+	marca varchar(45) not null,
+	setor varchar(45) not null,
+	tempo_operando int(5) not null,
+	tempo_parada int(5) not null,
+	proxima_manutencao DATE default null,
+	ultima_manutencao DATE default null,
+
+	constraint pk_maquina primary key (ID_MACHINE),
+	constraint fk_user foreign key (ID_USER) 
+		references Usuarios (ID_USER)
+);
+
+create table `Problemas` (
+	ID_PROBLEM int(5) auto_increment not null primary key, 
+	description varchar(200) not null,
+	solution varchar(200)
+);
+
+create table `MaquinaEProblemas` (
+	ID_MACHINE int(5) not null,
+	ID_PROBLEM int(5) not null,
+
+	constraint pk_maquinaEproblemas primary key (ID_MACHINE, ID_PROBLEM),
+	constraint fk_maquinaEproblemas1 foreign key (ID_MACHINE) 
+		references Maquina(ID_MACHINE),
+	constraint fk_maquinaEproblemas2 foreign key (ID_PROBLEM)
+		references Problemas (ID_PROBLEM)
+);
+
+create table `Transmissor` (
+	ID_TRANSMITTER int(5) auto_increment not null unique key, 
+	ID_MACHINE     int(5)  not null,
+	IP varchar(20) not null, 
+	
+	constraint pk_transmissor primary key (ID_TRANSMITTER),
+	constraint kf_ID_MACHINE foreign key (ID_MACHINE)
+		references Maquina(ID_MACHINE)
+);
+
+create table `Relatorio` (
+	ID_ADM int(5) null,
+	tipo varchar(50) not null,
+	data_inicio DATE not null,
+	data_fim DATE not null,
+	texto text,
+
+	constraint kf_relatorio foreign key (ID_ADM)
+		references Administracao(ID_ADM)
+);
+
+insert into Administracao values('1', 'Ana Paula', '1234');
+insert into Administracao values('2', 'Jorge Almeira', '4321');
+insert into Administracao values('3', 'João Marques', '4321');
+
+insert into Usuarios values('1','João Albuquerque','Operador','1234', 'Produção');
+insert into Usuarios values('2','Maria Aparecida','Operador','1234', 'Produção');
+insert into Usuarios values('3','Jose Morais','Operador','1234', 'Produção');
+insert into Usuarios values('4','Josefa da Silva','Operador','1234', 'Produção');
+insert into Usuarios values('5','Leandro Costa','Operador','1234', 'Produção');
+insert into Usuarios values('6','Leonardo Costa','Operador','1234', 'Produção');
+
+insert into Usuarios values('7','Luan Silva','Técnico','1234', 'Manutenção');
+insert into Usuarios values('8','Ledo Ivo','Técnico','1234', 'Manutenção');
+
+insert into Maquina values('1', '1', 'General Electric', 'Produção', '500', '20', '2019-12-12', '2019-10-12');
+insert into Maquina values('2', '2', 'General Electric', 'Produção', '200', '30', '2019-11-25', '2019-10-25');
+insert into Maquina values('3', '3', 'Borsch', 'Produção', '100', '2', '2019-11-20', '2019-09-30');
+insert into Maquina values('4', '4', 'WEG', 'Produção', '700', '15', '2019-12-12', '2019-09-13');
+insert into Maquina values('5', '7', 'WEG', 'Manutenção', '100', '0', '2020-03-21', '2019-06-14');
+
+insert into Problemas values('1', 'Sobreaquecimento', 'Desligar');
+insert into Problemas values('2', 'Falha no motor', 'Substituir Correia');
+insert into Problemas values('3', 'Travamento no eixo', 'Limpar engrenagens');
+insert into Problemas values('4', 'Velocidade não uniforme', 'Substituir encoder');
+insert into Problemas values('5', 'Desligamento inesperado', 'Substituir controlador');
+
+insert into MaquinaEProblemas values('1', '1');
+insert into MaquinaEProblemas values('1', '2');
+insert into MaquinaEProblemas values('2', '1');
+insert into MaquinaEProblemas values('2', '2');
+insert into MaquinaEProblemas values('2', '3');
+insert into MaquinaEProblemas values('3', '1');
+insert into MaquinaEProblemas values('3', '3');
+insert into MaquinaEProblemas values('4', '4');
+insert into MaquinaEProblemas values('4', '5');
+
+select nome, COUNT(*) as Ocorrencias from Maquina natural join Usuarios natural join Problemas natural join MaquinaEProblemas 
+group by nome order by Ocorrencias desc;
+
+select max(Ocorrencias) from (
+	select nome, COUNT(*) as Ocorrencias from Maquina natural join Usuarios natural join Problemas natural join MaquinaEProblemas 
+	group by nome
+) as max_c;
+
+select * from Maquina
+where Maquina.setor = (select setor from Maquina natural join Usuarios where (Usuarios.nome LIKE 'João%'));
+
+select ID_MACHINE, marca, setor, tempo_parada 
+from Maquina where tempo_parada = (select max(tempo_parada) from Maquina);
