@@ -86,6 +86,6 @@ class ItemList {
     }
     rect(this.x, this.y, this.itemWidth, this.itemHeight);
     fill(WHITE);
-    text("Máquina", this.x + 10, this.y + this.itemHeight/2);
+    text("Máquina " + this.machine.id, this.x + 10, this.y + this.itemHeight/2);
   }
 }

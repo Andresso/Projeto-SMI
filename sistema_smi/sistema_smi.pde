@@ -16,7 +16,7 @@ String separator;
 boolean BEGUN;
 boolean home = true;
 
-Machine m, m1;
+Machine m, m1, m2;
 MachineList ml;
 
 void setup() {
@@ -24,10 +24,12 @@ void setup() {
   noStroke();
 
   cp5 = new ControlP5(this);
-  m = new Machine("id", "ip");
+  m = new Machine("1", "ip");
   m.setStatus(NOT_OK_STATUS);
-  m1 = new Machine("id", "ip");
+  m1 = new Machine("2", "ip");
   m1.setStatus(OK_STATUS);
+  m2 = new Machine("3", "ip");
+  m2.setStatus(OK_STATUS);
 
   ml = new MachineList(5, 100);
 
@@ -36,7 +38,7 @@ void setup() {
   int itemh = 42;
   ml.addMachine(5, y0+0*(itemh+offset), m);
   ml.addMachine(5, y0+1*(itemh+offset), m1);
-  ml.addMachine(5, y0+2*(itemh+offset), m1);
+  ml.addMachine(5, y0+2*(itemh+offset), m2);
 
   gui();
 
@@ -61,5 +63,6 @@ void draw() {
     loginScreen();
   } else {
     ml.show();
+    drawReport();
   }
 }

@@ -17,6 +17,18 @@ void draw_taskBar() {
   image(icon, 8, TASK_BAR_H/2 - 32/2, 32, 32);
 }
 
+void drawReport() {
+  // Ícone
+  PImage icon = loadImage("data/icons/file.png");
+  image(icon, width - 60, TASK_BAR_H/2 - 32/2 -2, 32, 32);
+
+  // Título
+  fill(WHITE);
+  textSize(9);
+  textAlign(LEFT, CENTER);
+  text("Relatório", width - 60, 43);
+}
+
 void loginScreen() {
   float w_login = width*0.33;
   float h_login = height*0.5;
